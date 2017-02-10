@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: test1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: test1
+  template:
+    metadata:
+      labels:
+        run: test1
+    spec:
+      containers:
+      - image: tavisrudd/kub-workshop
+        imagePullPolicy: IfNotPresent
+        name: test1
+      - image: tavisrudd/kub-workshop
+        imagePullPolicy: IfNotPresent
+        name: test2
+        command:
+          - "bin/bash"
+          - "-c"
+          - "sleep infinity"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: test1
+  name: test1
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    run: test1
+  type: NodePort
